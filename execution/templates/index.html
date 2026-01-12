@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Savage AI Dashboard</title>
+    <style>
+        :root {
+            --bg: #050505;
+            --card-bg: #141414;
+            --card-border: #262626;
+            --text-main: #f1f5f9;
+            --text-sub: #94a3b8;
+            --accent: #e11d48;
+            /* Softer rose-red */
+            --accent-dim: rgba(225, 29, 72, 0.15);
+            --success: #10b981;
+            --danger: #9f1239;
+            /* Darker, less aggressive red */
+            --glow: 0 0 20px rgba(225, 29, 72, 0.2);
+            --radius: 8px;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            /* Vertical Center */
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: grid;
+            gap: 24px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: var(--glow);
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .status-badge {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            padding: 5px 12px;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .card {
+            background: linear-gradient(145deg, #1a1a1a 0%, #141414 100%);
+            border-radius: var(--radius);
+            padding: 24px;
+            border: 1px solid var(--card-border);
+            border-top: 1px solid #333;
+            /* Top highlight */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.25rem;
+            color: var(--text-sub);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: var(--radius);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-label {
+            color: var(--text-sub);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #fff;
+            font-family: monospace;
+        }
+
+        .controls-grid {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            /* efficient use of space, effectively one line on desktop */
+            justify-content: center;
+            gap: 12px;
+        }
+
+        /* Unified Button System */
+        .btn {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: capitalize;
+            border: 1px solid transparent;
+            /* default */
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Variants */
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-primary:hover {
+            background-color: #f43f5e;
+            /* slightly lighter red */
+        }
+
+        .btn-secondary {
+            background-color: #334155;
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+
+        .btn-danger {
+            background-color: rgba(220, 38, 38, 0.15);
+            /* darker red bg */
+            color: #fca5a5;
+            /* light red text */
+            border: 1px solid var(--danger);
+        }
+
+        .btn-danger:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-success {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border: 1px solid var(--success);
+        }
+
+        .btn-success:hover {
+            background-color: var(--success);
+            color: white;
+        }
+
+        /* Toggle specific overrides */
+        .btn-toggle-active {
+            background-color: var(--accent) !important;
+            color: white !important;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #333 0%, #333 100%);
+            outline: none;
+            cursor: pointer;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 22px;
+            width: 22px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fff 0%, #ddd 100%);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--accent);
+            transition: transform 0.15s ease;
+        }
+
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: linear-gradient(to right, var(--success) 0%, #333 100%);
+            border-radius: 4px;
+        }
+
+        input[type=range]::-moz-range-thumb {
+            height: 22px;
+            width: 22px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fff 0%, #ddd 100%);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+            border: 2px solid var(--accent);
+        }
+
+        input[type=range]::-moz-range-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #333;
+            border-radius: 4px;
+        }
+
+        .slider-container {
+            padding: 0 10px;
+            margin-bottom: 16px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px;
+            border-radius: var(--radius);
+        }
+
+        input {
+            flex-grow: 1;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 12px;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        /* .action-btn removed, use .btn-primary */
+
+        /* Fix Dropdown Visibility */
+        select option {
+            background-color: #1e293b;
+            /* Dark Slate */
+            color: white;
+        }
+
+        /* Tooltip styling */
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 10;
+            bottom: 125%;
+            /* Position above */
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 0.8rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: pre-line;
+            /* Handle newlines */
+            pointer-events: none;
+        }
+
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Toggle Switch Styles */
+        .toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+            cursor: pointer;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: #888;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background-color: var(--success);
+        }
+
+        .toggle-switch input:checked+.toggle-slider:before {
+            transform: translateX(22px);
+            background-color: white;
+        }
+
+        /* Arrow */
+        .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            background: rgba(20, 20, 20, 0.8);
+            /* Stronger background */
+            padding: 8px;
+            border-radius: var(--radius);
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            padding: 10px 24px;
+            width: auto;
+            border-radius: var(--radius);
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            background: rgba(255, 255, 255, 0.03);
+            /* Slight button bg */
+            border: 1px solid transparent;
+        }
+
+        .nav-btn.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.4);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: grid;
+            gap: 24px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: var(--radius);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 10px;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            padding: 10px;
+            border-radius: var(--radius);
+        }
+
+        .monitor-grid {
+            display: flex;
+            /* Force single line */
+            justify-content: space-between;
+            gap: 12px;
+            overflow-x: auto;
+            /* Scroll if window too small */
+        }
+
+        .monitor-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: var(--radius);
+            border: 1px solid var(--card-border);
+            text-align: center;
+            transition: all 0.2s ease;
+            flex: 1;
+            /* Distribute space evenly */
+            min-width: 100px;
+        }
+
+        .monitor-item:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .monitor-label {
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .monitor-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            font-family: 'Consolas', monospace;
+        }
+
+        .monitor-full {
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Savage AI Control Panel</h1>
+            <div style="margin-top: 10px; color: var(--text-sub);">
+                System Status: <span id="sys-status" class="status-badge">Online</span>
+            </div>
+
+            <!-- Navigation -->
+            <div class="nav-tabs" style="margin-top: 25px;">
+                <button class="nav-btn active" onclick="switchTab('dashboard')">Dashboard</button>
+                <button class="nav-btn" onclick="switchTab('settings')">Settings</button>
+                <button class="nav-btn" onclick="switchTab('features')">Guide</button>
+            </div>
+        </header>
+
+        <!-- DASHBOARD TAB -->
+        <div id="dashboard-tab" class="tab-content active">
+
+            <!-- System Monitor (Redesigned) -->
+            <div class="card" style="margin-bottom: 20px;">
+                <h2 style="margin-bottom: 15px; font-size: 1rem; border-bottom: none; color: white;">🖥️ System Monitor
+                </h2>
+                <div class="monitor-grid">
+                    <div class="monitor-item">
+                        <div class="monitor-label">CPU Load</div>
+                        <div class="monitor-value" id="cpu">--%</div>
+                    </div>
+                    <div class="monitor-item">
+                        <div class="monitor-label">RAM Usage</div>
+                        <div class="monitor-value" id="ram">--%</div>
+                    </div>
+                    <div class="monitor-item">
+                        <div class="monitor-label">GPU Load</div>
+                        <div class="monitor-value" id="gpu-load" style="color:#fbbf24">--</div>
+                    </div>
+                    <div class="monitor-item">
+                        <div class="monitor-label">VRAM Usage</div>
+                        <div class="monitor-value" id="vram" style="color:#f472b6">--</div>
+                    </div>
+                    <div class="monitor-item">
+                        <div class="monitor-label">Ping</div>
+                        <div class="monitor-value" id="ping">--</div>
+                    </div>
+                    <div class="monitor-item">
+                        <div class="monitor-label">Uptime</div>
+                        <div class="monitor-value" id="uptime" style="font-size: 0.9rem;">--</div>
+                    </div>
+                    <div class="monitor-item monitor-full">
+                        <div class="monitor-label">Active Voice Channel</div>
+                        <div class="monitor-value" id="vc-status" style="color:#10b981">Idle</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Models Info -->
+            <div class="card">
+                <h2>🤖 Loaded AI Models</h2>
+
+                <!-- Model Info Grid -->
+                <div class="monitor-grid" style="margin-bottom: 20px;">
+                    <div class="monitor-item">
+                        <div class="monitor-label">🎤 STT (Speech-to-Text)</div>
+                        <div class="monitor-value" id="stt-model" style="color:#60a5fa; font-size: 0.85rem;">--</div>
+                    </div>
+                    <div class="monitor-item">
+                        <div class="monitor-label">🔊 TTS (Text-to-Speech)</div>
+                        <div class="monitor-value" id="tts-model" style="color:#34d399; font-size: 0.85rem;">--</div>
+                    </div>
+                    <div class="monitor-item">
+                        <div class="monitor-label">👂 VAD (Voice Activity)</div>
+                        <div class="monitor-value" id="vad-model" style="color:#fbbf24; font-size: 0.85rem;">--</div>
+                    </div>
+                    <div class="monitor-item">
+                        <div class="monitor-label">🎨 Image Generation</div>
+                        <div class="monitor-value" id="image-model" style="color:#f472b6; font-size: 0.85rem;">--</div>
+                    </div>
+                </div>
+
+                <!-- LLM Section (Separate) -->
+                <div
+                    style="background: rgba(167, 139, 250, 0.1); border-radius: 12px; padding: 15px; border: 1px solid rgba(167, 139, 250, 0.3);">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                        <span style="font-size: 1.2rem;">🧠</span>
+                        <div>
+                            <div style="font-size: 0.8rem; color: var(--text-sub);">Remote LLM (LM Studio)</div>
+                            <div id="llm-model" style="font-size: 0.95rem; color:#a78bfa; font-weight: 500;">--</div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <select id="model-selector"
+                            style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #1a1a2e; color: #fff; font-size: 0.9rem;">
+                            <option value="">Loading models...</option>
+                        </select>
+                        <button class="btn btn-primary" onclick="switchModel()"
+                            style="width: auto; padding: 10px 20px;">Switch</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card">
+                <h2>Command Center</h2>
+
+                <!-- Voice Changer Moved to Settings -->
+
+                <!-- Live Feed -->
+
+                <!-- Live Feed -->
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color:var(--text-sub); font-size:0.9rem; margin-bottom:10px;">LIVE FEED</h3>
+                    <div id="live-feed"
+                        style="background:rgba(0,0,0,0.3); border-radius:8px; padding:15px; height:200px; overflow-y:auto; font-family:monospace; font-size:0.9rem;">
+                        <div style="color:#666;">Waiting for activity...</div>
+                    </div>
+                </div>
+
+                <div class="input-group" style="margin-bottom: 20px;">
+                    <input type="text" id="tts-input" placeholder="Enter text to speak..."
+                        onkeypress="handleEnter(event)">
+                    <button class="btn btn-primary" style="width: auto;" onclick="sendTTS()">Broadcast</button>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-danger" style="flex: 1;" onclick="disconnect()">🚨 Emergency
+                        Disconnect</button>
+                    <button class="btn btn-danger" style="flex: 1;" onclick="resetMemory()">🧠 Reset Memory</button>
+                </div>
+            </div>
+        </div> <!-- End Dashboard Tab -->
+
+        <!-- SETTINGS TAB -->
+        <div id="settings-tab" class="tab-content">
+            <!-- Invite Link (Moved to Top) -->
+            <div class="card">
+                <h2>Administrative</h2>
+                <div style="margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+                    <button class="btn btn-success" onclick="copyInvite()" style="flex: 1; min-width: 200px;">
+                        🔗 Copy Invite Link
+                    </button>
+                    <button class="btn btn-danger" onclick="resetMemory()" style="flex: 1; min-width: 200px;">
+                        🧠 Reset Memory
+                    </button>
+                </div>
+                <div
+                    style="margin-top: 10px; text-align: center; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <button class="btn btn-danger" style="flex: 1; min-width: 200px;" onclick="disconnect()">🚨
+                        Disconnect Bot</button>
+                    <button class="btn btn-primary" style="flex: 1; min-width: 200px;" onclick="restartBot()">🔄 Restart
+                        System</button>
+                </div>
+            </div>
+
+            <!-- Voice Settings -->
+            <div class="card">
+                <h2>🔊 Voice Settings</h2>
+                <div style="margin-bottom: 10px;">
+                    <label style="color:var(--text-sub); display:block; margin-bottom:8px;">Active Voice Model</label>
+                    <div class="input-group">
+                        <select id="voice-select"
+                            style="flex-grow:1; background:#1a1a2e; border:1px solid #333; color:white; padding:12px; font-size:1rem; border-radius:8px; outline:none;">
+                            <option>Loading...</option>
+                        </select>
+                        <button class="btn btn-primary" style="width: auto;" onclick="saveVoice()">Apply</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toggles -->
+            <div class="card">
+                <h2>Feature Toggles</h2>
+                <div id="toggles" class="controls-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Rudeness Controls -->
+            <div class="card">
+                <h2>Personality Calibration</h2>
+                <div style="margin-bottom: 20px;">
+                    <label
+                        style="color:var(--text-sub); display:flex; justify-content:space-between; margin-bottom:10px;">
+                        <span>Rudeness Level</span>
+                        <span id="rudeness-val" style="color:var(--accent); font-weight:bold;">100%</span>
+                    </label>
+                    <input type="range" id="rudeness-slider" min="0" max="100" value="100" step="10"
+                        style="width:100%; height:8px; border-radius:5px; background:rgba(255,255,255,0.1); outline:none; cursor:pointer;"
+                        oninput="updateRudenessDisplay(this.value)" onchange="saveRudeness(this.value)">
+                    <div
+                        style="display:flex; justify-content:space-between; color:var(--text-sub); font-size:0.8rem; margin-top:5px;">
+                        <span>😇 Angelic</span>
+                        <span>😏 Sassy</span>
+                        <span>😈 Savage</span>
+                    </div>
+
+                    <!-- Auto-Clown Chance -->
+                    <label
+                        style="color:var(--text-sub); display:flex; justify-content:space-between; margin-bottom:10px; margin-top: 20px;">
+                        <span>Auto-Clown Chance</span>
+                        <span id="clown-val" style="color:#c084fc; font-weight:bold;">1%</span>
+                    </label>
+                    <input type="range" id="clown-slider" min="0" max="100" value="1" step="0.5"
+                        style="width:100%; height:8px; border-radius:5px; background:rgba(255,255,255,0.1); outline:none; cursor:pointer;"
+                        oninput="updateClownDisplay(this.value)" onchange="saveClownChance(this.value)">
+                    <div
+                        style="display:flex; justify-content:space-between; color:var(--text-sub); font-size:0.8rem; margin-top:5px;">
+                        <span>0% (Safe)</span>
+                        <span>100% (Anarchy)</span>
+                    </div>
+                    <!-- Context Depth -->
+                    <label
+                        style="color:var(--text-sub); display:flex; justify-content:space-between; margin-bottom:10px; margin-top: 20px;">
+                        <span>Context Depth (Memory)</span>
+                        <span id="depth-val" style="color:#60a5fa; font-weight:bold;">5</span>
+                    </label>
+                    <input type="range" id="depth-slider" min="1" max="20" value="5" step="1"
+                        style="width:100%; height:8px; border-radius:5px; background:rgba(255,255,255,0.1); outline:none; cursor:pointer;"
+                        oninput="updateDepthDisplay(this.value)" onchange="saveDepth(this.value)">
+                    <div
+                        style="display:flex; justify-content:space-between; color:var(--text-sub); font-size:0.8rem; margin-top:5px;">
+                        <span>1 (Goldfish)</span>
+                        <span>20 (Elephant)</span>
+                    </div>
+
+                    <div
+                        style="margin-top:20px; color:var(--text-sub); font-size:0.8rem; padding:10px; background:rgba(255,255,255,0.05); border-radius:5px;">
+                        <strong>ℹ️ Note:</strong> "Savage Reactions" now target only active users (active in last 1hr).
+                        Emoji reactions are decided by the AI.
+                    </div>
+                </div>
+            </div> <!-- End Personality Card -->
+
+            <!-- Server Management -->
+            <div class="card">
+                <h2>Connected Servers</h2>
+                <div id="server-list"
+                    style="display: grid; gap: 10px; max-height: 300px; overflow-y: auto; padding-right: 5px;">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div> <!-- Close Settings Tab -->
+
+        <!-- FEATURES TAB -->
+        <div id="features-tab" class="tab-content">
+            <!-- Voice Capabilities -->
+            <div class="card">
+                <h2>🎤 Voice Chat AI (Upgraded)</h2>
+                <div class="feature-item">
+                    <div style="flex-grow:1;">
+                        <h3 style="margin:0; color:white;">Real-Time Interaction</h3>
+                        <p style="color:var(--text-sub); margin-top:5px; line-height:1.5;">
+                            The bot uses <strong>Silero VAD</strong> (Voice Activity Detection) to detect speech with a
+                            0.5s safety buffer.
+                            It listens passively and only responds if:
+                            <br>1. You say the wake word <strong>"Savage"</strong> or <strong>"Assistant"</strong>.
+                            <br>2. It randomly decides to mock you (configurable interjection chance).
+                            <br>3. You <strong>DM</strong> it (mutual server check enabled).
+                            <br><br>
+                            <strong>Voice Commands:</strong>
+                            <br>• <code>Savage, status</code> - Show system status
+                            <br>• <code>Savage, help</code> - Show help in chat
+                            <br>• <code>Savage, reset memory</code> - Clear conversation history
+                            <br>• <code>Savage, shut up</code> - Stop speaking immediately
+                            <br><br>
+                            <strong>Processing Pipeline:</strong>
+                            <br>• <strong>STT</strong>: Faster-Whisper <code>small.en</code> (Beam Size: 5, CUDA).
+                            <br>• <strong>TTS</strong>: Kokoro-82M (40ms latency) via GPU.
+                            <br>• <strong>LLM</strong>: Switchable via Dashboard Settings.
+                            <br>• <strong>Privacy</strong>: All processing is done locally on Logicalgamer.com servers.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Persona & Personality -->
+            <div class="card">
+                <h2>😈 Personality Engine</h2>
+                <div class="feature-item">
+                    <div class="feature-icon">🔥</div>
+                    <div>
+                        <h3 style="margin:0; color:white;">Dynamic "Savage" Persona</h3>
+                        <p style="color:var(--text-sub); margin-top:5px; line-height:1.5;">
+                            This is not a helpful assistant. It is designed to be rude, sarcastic, and unhelpful.
+                            <br>• <strong>Rudeness Slider</strong>: Adjust from 0% (Polite) to 100% (Toxic).
+                            <br>• <strong>Context Memory</strong>: Stores up to 20 messages per channel.
+                            <br>• <strong>Game Shaming</strong>: If you play <em>League of Legends</em> or
+                            <em>Roblox</em>, it <strong>will</strong> mock you.
+                        </p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🤡</div>
+                    <div>
+                        <h3 style="margin:0; color:white;">Auto-Clown & Reactions</h3>
+                        <p style="color:var(--text-sub); margin-top:5px; line-height:1.5;">
+                            <strong>Passive Mode</strong>: The bot has a 1% chance (configurable) to reply to ANY
+                            message with an "Official Clown License".
+                            <br><strong>Manual Mode</strong>: Use <code>/clown @user</code> to force-issue a license.
+                            <br><strong>Savage Reactions</strong>: Returns emojis (e.g. 🤡, 🗑️, 🔥) based on the
+                            <strong>mood</strong> of your text.
+                            <br><strong>DM Shaming</strong>: If you DM the bot, it will mock you for being a coward.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Generation -->
+            <div class="card">
+                <h2>🎨 Creative Studio</h2>
+                <div class="feature-item">
+                    <div class="feature-icon">🖼️</div>
+                    <div>
+                        <h3 style="margin:0; color:white;">AI Image Generation</h3>
+                        <p style="color:var(--text-sub); margin-top:5px; line-height:1.5;">
+                            Generate specialized artwork directly in Discord.
+                            <br>• <strong>/imagine [prompt]</strong>: Create high-quality images using <strong>Stable
+                                Diffusion 1.5</strong>.
+                            <br>• <strong>Low VRAM Mode</strong>: Optimized to use &lt;3GB GPU memory by dynamically
+                            offloading to CPU.
+                            <br>• <strong>Privacy</strong>: All images are generated 100% locally.
+                            <br>• <strong>Note</strong>: Generation takes ~10-30s depending on hardware.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Tools -->
+            <div class="card">
+                <h2>🛠️ Tools & Administration</h2>
+                <div class="feature-item">
+                    <div class="feature-icon">🧠</div>
+                    <div>
+                        <h3 style="margin:0; color:white;">Deep Memory Control</h3>
+                        <p style="color:var(--text-sub); margin-top:5px; line-height:1.5;">
+                            Control exactly how much the bot remembers.
+                            <br>• <strong>/context [1-20]</strong>: Set message history depth.
+                            <br>• <strong>Reset Memory</strong>: Panic button to wipe all conversation history
+                            instantly.
+                            <br>• <strong>/reset</strong>: Clears history for the current channel only.
+                        </p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔊</div>
+                    <div>
+                        <h3 style="margin:0; color:white;">TTS & Voice Control</h3>
+                        <p style="color:var(--text-sub); margin-top:5px; line-height:1.5;">
+                            The bot is your mouthpiece.
+                            <br>• <strong>/say [text]</strong>: Force the bot to say anything in the Voice Channel.
+                            <br>• <strong>Voice Models</strong>: Switch between 10+ Kokoro voices instantly from the
+                            Settings tab.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div style="text-align:center; margin-top:20px; color:var(--text-sub); font-size:0.8rem; line-height: 1.6;">
+        <strong>100% Private & Secure</strong><br>
+        All data (Voice, Text, Images) is processed on <strong>Logicalgamer.com servers</strong>.<br>
+        No data leaves this closed network or is shared with 3rd parties.<br>
+        Created by <strong>Logicalgamer</strong> • Coded by <strong>Gemini & Google Antigravity</strong>
+    </div>
+
+
+    <script>
+        // Init Voice Options
+        fetch('/api/voice')
+            .then(r => r.json())
+            .then(data => {
+                const select = document.getElementById('voice-select');
+                select.innerHTML = '';
+                data.options.forEach(v => {
+                    const opt = document.createElement('option');
+                    opt.value = v;
+                    opt.innerText = v;
+                    if (v === data.current) opt.selected = true;
+                    select.appendChild(opt);
+                });
+            });
+
+        // Init Rudeness
+        fetch('/api/status').then(r => r.json()).then(data => {
+            const level = data.features.rudeness_level ?? 100;
+            // Wait, status returns features dict, but rudeness might be top level or in features?
+            // Actually config structure is flat or nested? 
+            // Let's assume it's in config root, but /api/status wraps it?
+            // /api/status returns {features: ...}. 
+            // We haven't exposed rudeness in /api/status features yet.
+            // Let's just default to 100 or fetch from dedicated if needed.
+            // Better: Update /api/status to return rudeness.
+        });
+
+        // Init data
+        fetch('/api/status').then(r => r.json()).then(data => {
+            const rudeness = data.features.rudeness_level ?? 100; // Fallback
+            // Actually rudeness is returned at root now?
+            // Let's check updateStats
+
+            // Set Sliders
+            document.getElementById('rudeness-slider').value = data.rudeness_level || 100;
+            updateRudenessDisplay(data.rudeness_level || 100);
+
+            document.getElementById('clown-slider').value = data.clown_chance || 0;
+            updateClownDisplay(data.clown_chance || 0);
+        });
+
+        function updateRudenessDisplay(val) {
+            document.getElementById('rudeness-val').innerText = val + '%';
+        }
+
+        function saveRudeness(val) {
+            fetch('/api/rudeness', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ level: val })
+            });
+        }
+
+        function switchTab(tabId) {
+            // Hide all navs
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            // Show target
+            document.getElementById(tabId + '-tab').classList.add('active');
+
+            // Find button (ordered: Dashboard=0, Settings=1, Features=2)
+            const btns = document.querySelectorAll('.nav-btn');
+            if (tabId === 'dashboard') btns[0].classList.add('active');
+            if (tabId === 'settings') btns[1].classList.add('active');
+            if (tabId === 'features') btns[2].classList.add('active');
+        }
+
+        function copyInvite() {
+            const link = "https://discord.com/oauth2/authorize?client_id=1418430082631995403";
+            // Robust copy with fallback
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(link).then(successCopy).catch(() => fallbackCopy(link));
+            } else {
+                fallbackCopy(link);
+            }
+        }
+
+        function successCopy() {
+            const btn = document.querySelector('button[onclick="copyInvite()"]');
+            const original = btn.innerText;
+            btn.innerText = "✅ Copied!";
+            setTimeout(() => btn.innerText = original, 2000);
+        }
+
+        function fallbackCopy(text) {
+            prompt("Copy this link:", text);
+        }
+
+        function saveVoice() {
+            const select = document.getElementById('voice-select');
+            const voice = select.value;
+            fetch('/api/voice', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ voice })
+            }).then(() => alert('Voice updated!'));
+        }
+
+        function updateLogs() {
+            fetch('/api/logs')
+                .then(r => r.json())
+                .then(logs => {
+                    const feed = document.getElementById('live-feed');
+                    feed.innerHTML = '';
+                    logs.forEach(log => {
+                        const div = document.createElement('div');
+                        div.style.marginBottom = '8px';
+                        let color = '#ccc';
+                        if (log.type === 'bot') color = '#f43f5e';
+                        if (log.type === 'user') color = '#60a5fa';
+
+                        div.innerHTML = `<span style="color:#666">[${log.timestamp}]</span> <strong style="color:${color}">${log.author}:</strong> ${log.content}`;
+                        feed.appendChild(div);
+                    });
+                });
+        }
+
+        setInterval(updateLogs, 2000);
+
+        function updateStats() {
+            fetch('/api/status')
+                .then(r => r.json())
+                .then(data => {
+                    const setIfExists = (id, val, suffix = '') => {
+                        const el = document.getElementById(id);
+                        if (el) el.innerText = val + suffix;
+                    };
+
+                    setIfExists('gpu-load', data.gpu_load);
+                    setIfExists('vram', data.vram);
+                    setIfExists('ping', data.ping, 'ms');
+                    setIfExists('cpu', data.cpu, '%');
+                    setIfExists('ram', data.ram, '%');
+                    setIfExists('uptime', data.uptime);
+
+                    const vcStatus = document.getElementById('vc-status');
+                    if (vcStatus) {
+                        vcStatus.innerText = data.vc_status;
+                        vcStatus.style.color = data.vc_status !== 'Idle' ? 'var(--success)' : 'var(--text-sub)';
+                    }
+
+                    // Update AI Model Info
+                    if (data.models) {
+                        const m = data.models;
+                        if (m.llm) {
+                            const llmEl = document.getElementById('llm-model');
+                            if (llmEl) llmEl.innerText = `${m.llm.name} @ ${m.llm.endpoint}`;
+                        }
+                        setIfExists('stt-model', m.stt || '--');
+                        setIfExists('tts-model', m.tts || '--');
+                        setIfExists('vad-model', m.vad || '--');
+                        setIfExists('image-model', m.image_gen || '--');
+                    }
+
+                    // Update System Status to Online
+                    const sysStatus = document.getElementById('sys-status');
+                    if (sysStatus) {
+                        sysStatus.innerText = "Online";
+                        sysStatus.style.color = "var(--success)";
+                        sysStatus.style.background = "rgba(16, 185, 129, 0.1)";
+                    }
+
+                    // Update Server List
+                    const serverList = document.getElementById('server-list');
+                    if (serverList) {
+                        serverList.innerHTML = '';
+                        if (data.guilds) {
+                            data.guilds.forEach(g => {
+                                const div = document.createElement('div');
+                                div.className = 'input-group';
+                                div.style.justifyContent = 'space-between';
+                                div.style.alignItems = 'center';
+                                div.innerHTML = `
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        ${g.icon ? `<img src="${g.icon}" style="width:32px; height:32px; border-radius:50%;">` : '💻'}
+                                        <div>
+                                            <div style="font-weight:bold;">${g.name}</div>
+                                            <div style="font-size:0.8rem; color:#aaa;">${g.member_count} Members</div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-danger" style="width:auto; padding: 8px 16px; font-size:0.8rem;" onclick="leaveGuild('${g.id}', '${g.name}')">Leave</button>
+                                `;
+                                serverList.appendChild(div);
+                            });
+                        }
+                    }
+
+                    // Update Toggles
+                    const toggleContainer = document.getElementById('toggles');
+                    if (toggleContainer) {
+                        toggleContainer.innerHTML = '';
+                        if (data.features) {
+                            for (const [feature, enabled] of Object.entries(data.features)) {
+                                // Container for Tooltip
+                                const container = document.createElement('div');
+                                container.className = 'tooltip-container';
+                                container.style.width = '100%';
+
+                                const btn = document.createElement('button');
+                                btn.className = `btn ${enabled ? 'btn-primary' : 'btn-secondary'}`;
+
+                                // Icon mapping
+                                let icon = '⚙️';
+                                if (feature.includes('roast')) icon = '🔥';
+                                if (feature.includes('rude')) icon = '😈';
+                                if (feature.includes('reaction')) icon = '🤡';
+                                if (feature.includes('clown')) icon = '🎪';
+                                if (feature.includes('game')) icon = '🎮';
+                                if (feature.includes('activity')) icon = '🕵️';
+
+                                // Prettier feature name
+                                const prettyName = feature.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+                                // Create toggle row with slider
+                                container.className = 'toggle-row tooltip-container';
+                                container.innerHTML = `
+                                    <div class="toggle-label">
+                                        <span>${icon}</span>
+                                        <span>${prettyName}</span>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" ${enabled ? 'checked' : ''} onchange="toggleFeature('${feature}', this.checked)">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                `;
+
+                                // Tooltip Text
+                                if (data.descriptions && data.descriptions[feature]) {
+                                    const tip = document.createElement('span');
+                                    tip.className = 'tooltip-text';
+                                    tip.innerText = data.descriptions[feature];
+                                    container.appendChild(tip);
+                                }
+
+                                toggleContainer.appendChild(container);
+                            }
+                        } else {
+                            console.warn("No features returned from API");
+                        }
+                    }
+                })
+                .catch((e) => {
+                    console.error("Update failed:", e);
+                    const sys = document.getElementById('sys-status');
+                    if (sys) {
+                        sys.innerText = "Offline";
+                        sys.style.color = "var(--danger)";
+                        sys.style.background = "rgba(239, 68, 68, 0.1)";
+                    }
+                });
+        }
+
+        function leaveGuild(id, name) {
+            if (confirm(`Are you SURE you want to leave ${name}?`)) {
+                fetch('/api/leave_guild', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ guild_id: id })
+                }).then(updateStats);
+            }
+        }
+
+        function disconnect() {
+            if (confirm("Are you sure you want to disconnect?")) {
+                fetch('/api/disconnect', { method: 'POST' });
+            }
+        }
+
+        function restartBot() {
+            if (confirm("Are you sure you want to RESTART the bot? This will take a few seconds.")) {
+                fetch('/api/restart', { method: 'POST' })
+                    .then(() => {
+                        alert("Restart initiated. The bot will be back online shortly.");
+                    })
+                    .catch(err => {
+                        alert("Restart failed: " + err);
+                    });
+            }
+        }
+
+        function toggleFeature(feature, state) {
+            fetch('/api/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ feature, state })
+            }).then(updateStats);
+        }
+
+        function loadModels() {
+            fetch('/api/models')
+                .then(r => r.json())
+                .then(data => {
+                    const selector = document.getElementById('model-selector');
+                    if (!selector) return;
+
+                    if (data.error) {
+                        selector.innerHTML = `<option value="">Error: ${data.error}</option>`;
+                        return;
+                    }
+
+                    selector.innerHTML = '';
+                    (data.models || []).forEach(model => {
+                        const opt = document.createElement('option');
+                        opt.value = model;
+                        opt.textContent = model;
+                        if (model === data.current) opt.selected = true;
+                        selector.appendChild(opt);
+                    });
+                })
+                .catch(err => {
+                    const selector = document.getElementById('model-selector');
+                    if (selector) selector.innerHTML = `<option value="">Failed to load</option>`;
+                });
+        }
+
+        function switchModel() {
+            const selector = document.getElementById('model-selector');
+            const model = selector ? selector.value : null;
+            if (!model) {
+                alert('Please select a model first.');
+                return;
+            }
+
+            fetch('/api/set_model', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ model })
+            })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === 'ok') {
+                        alert(`Switched to: ${data.model}`);
+                        updateStats(); // Refresh display
+                    } else {
+                        alert(`Error: ${data.error}`);
+                    }
+                });
+        }
+
+        // Load models on page load
+        loadModels();
+
+        function updateClownDisplay(val) {
+            document.getElementById('clown-val').innerText = val + '%';
+        }
+
+        function saveClownChance(val) {
+            fetch('/api/clown_chance', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chance: val })
+            });
+        }
+
+        function updateDepthDisplay(val) {
+            document.getElementById('depth-val').innerText = val;
+        }
+
+        function saveDepth(val) {
+            fetch('/api/context_depth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ depth: val })
+            });
+        }
+
+        function resetMemory() {
+            if (confirm("Are you sure you want to WIPE all bot memory? This cannot be undone.")) {
+                fetch('/api/reset_memory', { method: 'POST' })
+                    .then(() => alert("Memory has been wiped."));
+            }
+        }
+
+        function sendTTS() {
+            const input = document.getElementById('tts-input');
+            const text = input.value;
+            if (!text) return;
+
+            const btn = document.querySelector('.action-btn');
+            const originalText = btn.innerText;
+            btn.innerText = "Sending...";
+
+            fetch('/api/say', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text })
+            }).then(() => {
+                input.value = '';
+                setTimeout(() => btn.innerText = originalText, 1000);
+            });
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') sendTTS();
+        }
+
+        // Init Data for Sliders
+        fetch('/api/status').then(r => r.json()).then(data => {
+            const rudeness = data.features?.rudeness_level ?? 100;
+            document.getElementById('rudeness-slider').value = data.rudeness_level || 100;
+            // updateRudenessDisplay(data.rudeness_level || 100); // Defined earlier? 
+
+            document.getElementById('clown-slider').value = data.clown_chance || 0;
+            updateClownDisplay(data.clown_chance || 0);
+
+            document.getElementById('depth-slider').value = data.context_depth || 5;
+            updateDepthDisplay(data.context_depth || 5);
+        });
+
+        setInterval(updateStats, 2000);
+        updateStats();
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,38 @@
+{
+    "wake_words": [
+        "assistant",
+        "savage"
+    ],
+    "status_messages": [
+        "Listening for 'Savage'",
+        "Listening for 'Assistant'",
+        "Waiting for someone to @me",
+        "Processing AI Queries",
+        "Optimizing Neural Nets",
+        "Talking to the void"
+    ],
+    "kokoro_voice": "am_adam",
+    "kokoro_speed": 1.2,
+    "system_prompt_file": "directives/discord_persona.md",
+    "local_ai_model": "your_model_name_here",
+    "local_ai_base_url": "http://localhost:1234/v1",
+    "stt_model_size": "small.en",
+    "vad_silence_seconds": 0.5,
+    "interrupt_words": [
+        "stop",
+        "silence",
+        "shut up",
+        "quiet"
+    ],
+    "interjection_chance": 0.05,
+    "auto_clown_chance": 0.01,
+    "max_memory_depth": 5,
+    "admin_id": 0,
+    "features": {
+        "roast": true,
+        "rude_welcomes": true,
+        "savage_reactions": true,
+        "auto_clown": true,
+        "activity_shaming": true
+    }
+}
