@@ -3,74 +3,134 @@
 > **⚠️ VIBE CODED PROJECT**
 > This project was built using "Vibe Coding" (Agentic AI). The code was generated iteratively to meet specific vibes and functionality. It may contain quirks, unconventional structures, or unoptimized patterns. Use at your own risk!
 
-Savage AI is a locally-hosted, voice-enabled Discord bot with a distinct personality. It doesn't just help—it judges.
-
-## ✨ Features
-
-### 🎤 **Voice Interaction**
-*   **Real-Time VAD**: Uses Silero VAD to detect when you are speaking.
-*   **Wake Word Detection**: Responds to "Savage", "Assistant", "AI".
-*   **TTS (Text-to-Speech)**: High-quality, low-latency audio using **Kokoro-82M**.
-*   **STT (Speech-to-Text)**: Fast transcription using **Faster-Whisper**.
-*   **Voice Commands**: Tell the bot to "shut up", "reset memory", or check "status".
-
-### 😈 **Personality Engine**
-*   **Dynamic Rudeness**: Admin-controlled rudeness level (0-100%).
-*   **Active Shaming**: Mocks users for playing League of Legends, Roblox, etc.
-*   **Rude Welcomes**: Insults users when they join the voice channel.
-*   **Savage Reactions**: Reacts to messages with emojis based on sentiment (🤡, 💀, 🙄).
-*   **Auto-Clown**: Randomly replies with an "Official Clown License".
-
-### 🖼️ **Creative & Utility**
-*   **Image Generation**: Generate AI art locally (`/imagine`) using Stable Diffusion (Low VRAM mode).
-*   **Dashboard**: Full web-based control panel to toggle features, monitor stats, and switch models.
-*   **Memory**: Context-aware conversations with configurable depth.
+Savage AI is a **fully local**, **voice-enabled** Discord bot that combines modern AI audio stacks with a dynamic, rude personality engine. It doesn't just assist you—it judges you.
 
 ---
 
-## 🚀 Installation
+## ✨ Features Overview
+
+### 🎤 **Advanced Voice Interaction**
+The bot acts as a user in Voice Chat, not just a music bot.
+*   **Real-Time VAD (Voice Activity Detection)**: Uses **Silero VAD** to detect speech with a 0.5s safety buffer, allowing for natural pauses without cutting the user off.
+*   **Passive Listening**: The bot listens to context but only responds when triggered (Wake Word or Interjection).
+*   **Wake Word Detection**: Responds to **"Savage"**, **"Assistant"**, or **"AI"**.
+*   **Interjections**: Configurable (5%) chance to randomly jump into conversations if it "hears" something stupid.
+*   **Silence Commands**: Immediately stops talking when you say "Shut up", "Silence", or "Stop talking".
+*   **Local STT**: Transcribes audio using **Faster-Whisper (`small.en`)** with Beam Size 5 for high accuracy (CUDA accelerated).
+*   **Local TTS**: Generates speech using **Kokoro-82M** (v1.0), achieving ~40ms latency on GPU.
+
+### 😈 **Personality Engine**
+A dynamic system that adjusts behavior based on admin settings.
+*   **Rudeness Slider (0-100%)**:
+    *   **0-30% (Angelic)**: Helpful, polite, standard assistant.
+    *   **31-70% (Sassy)**: Helpful but sarcastic, makes fun of simple questions.
+    *   **71-100% (Savage)**: Toxic, aggressive, actively insults users while answering.
+*   **Active Shaming**: Detects what game/music you are playing via Discord Activity status.
+    *   *Playing League of Legends?* It will mock your life choices.
+    *   *Listening to Taylor Swift?* It will judge your taste.
+*   **Rude Welcomes**: Customized insults when specific users join the Voice Channel.
+*   **Savage Reactions**: Analyzes text messages and reacts with emojis (🤡, 💀, 🙄, 👎) based on sentiment.
+*   **Auto-Clown**: 1% chance to reply to any text message with an "Official Clown License" image.
+*   **DM Shaming**: If a user DMs the bot, it mocks them for being too scared to speak in the public server.
+
+### 🖼️ **Creative & Utility**
+*   **Local Image Generation**:
+    *   Command: `/imagine [prompt]`
+    *   Model: **Stable Diffusion 1.5** (Optimized for Low VRAM).
+    *   Performance: Offloads to CPU when not in use to save VRAM for LLM/TTS.
+*   **Deep Memory System**:
+    *   context-aware conversations (remembers the last 5-20 messages).
+    *   Persistent per-channel, short-term memory.
+    *   `/reset` command to verify or wipe memory instantly.
+
+### 💻 **Web Dashboard**
+A full local web interface (`http://localhost:5000`) to control the bot in real-time.
+*   **System Monitor**: View CPU, RAM, GPU Load, VRAM Usage, and Ping.
+*   **Model Switcher**: Dynamic dropdown to switch **LLM Models** via LM Studio API without restarting.
+*   **Feature Toggles**: Instantly enable/disable specific features (Roast, Rude Welcomes, etc.).
+*   **Live Feed**: See a real-time log of what the bot is hearing and thinking.
+*   **Voice Selector**: Switch between 10+ different TTS voices (American, British, etc.).
+*   **Control Center**: Buttons to Force Disconnect, Reset Memory, or Restart the System.
+
+### 🔍 **Technical Stack**
+*   **LLM**: Connects to **LM Studio** (OpenAI-compatible API) for intelligence.
+*   **STT**: `faster-whisper` (impl. CTranslate2).
+*   **TTS**: `kokoro` (ONNX/PyTorch).
+*   **VAD**: `silero-vad` (TorchHub).
+*   **Image**: `diffusers` (HuggingFace).
+*   **Backend**: Python 3.10 + Flask (Dashboard).
+
+---
+
+## 🚀 Installation Guide
 
 ### 1. Prerequisites
-*   Windows OS (Preferred)
-*   Python 3.10+
-*   NVIDIA GPU (Recommended for TTS/STT/Image Gen)
-*   [FFmpeg](https://ffmpeg.org/download.html) installed and added to PATH.
-*   [LM Studio](https://lmstudio.ai/) (or any OpenAI-compatible Local AI server) running.
+*   **OS**: Windows 10/11 (Preferred for Audio Drivers).
+*   **Python**: Version 3.10 or higher.
+*   **GPU**: NVIDIA GPU with at least 6GB VRAM recommended (supports CPU-only but slow).
+*   **FFmpeg**: Must be installed and added to System PATH. [Download Here](https://ffmpeg.org/download.html).
+*   **LM Studio**: Download from [lmstudio.ai](https://lmstudio.ai/) to run the LLM.
 
 ### 2. Setup
-1.  **Clone or Download** this repository.
-2.  **Install Dependencies**:
+1.  **Clone the Repository**:
+    ```bash
+    git clone https://github.com/yourusername/SavageAI.git
+    cd SavageAI
+    ```
+
+2.  **Install Python Dependencies**:
     ```bash
     pip install -r requirements.txt
     ```
-    *(Note: You may need to install PyTorch manually depending on your CUDA version)*
-3.  **Configuration**:
-    *   Rename `.env.example` to `.env` and add your Discord Token.
-    *   Edit `config.json` to tweak settings (if desired).
-4.  **Start Local AI**:
-    *   Open LM Studio, load a model (e.g., Llama 3), and start the server on port `1234`.
+    *(Tip: If you have issues with PyTorch, install the CUDA version specifically from [pytorch.org](https://pytorch.org/))*
 
-### 3. Run
-Double-click `start_bot.bat` or run:
+3.  **Environment Config**:
+    *   Rename `.env.example` to `.env`.
+    *   Add your **Discord Bot Token**.
+    *   Ensure `LOCAL_AI_BASE_URL` matches your LM Studio port (default `http://localhost:1234/v1`).
+
+4.  **LM Studio Setup**:
+    *   Load a model (Recommended: `Llama-3-8B-Instruct` or `Mistral-7B`).
+    *   Start the **Local Server** on port `1234`.
+    *   Ensure "Cross-Origin-Resource-Sharing (CORS)" is enabled if accessing from a browser app (optional).
+
+### 3. Run the Bot
+Double-click `start_bot.bat` OR run via terminal:
 ```bash
 python execution/discord_bot.py
 ```
+*The Dashboard will launch at `http://localhost:5000`.*
 
 ---
 
-## 🛠️ Configuration
+## 🛠️ Slash Command List
 
-**`.env`**:
-```ini
-DISCORD_TOKEN=your_token_here
-LOCAL_AI_BASE_URL=http://localhost:1234/v1
-```
+### **User Commands**
+| Command | Description |
+| :--- | :--- |
+| `/join` | Summon the bot to your Voice Channel. |
+| `/leave` | Dismiss the bot from Voice Chat. |
+| `/reset` | Wipe short-term memory for the current channel. |
+| `/status` | View bot health, latency, and loaded models. |
+| `/clown @user` | Generate and send an "Official Clown License" to a user. |
+| `/imagine [prompt]` | Generate an AI image based on your prompt. |
+| `/roast @user` | Manually trigger a roast on a specific user. |
 
-**`config.json`**:
-*   `rudeness_level`: 0 (Nice) to 100 (Savage)
-*   `features`: Toggle specific modules like `roast`, `auto_clown`, etc.
+### **Admin Commands**
+| Command | Description |
+| :--- | :--- |
+| `/rudeness [0-100]` | Set the global rudeness/personality level. |
+| `/context [1-20]` | Set how many messages the bot remembers (Memory Depth). |
+| `/say [text]` | Force the bot to say something in Voice Chat (TTS). |
+| `/troll @user` | Target a specific user for constant harassment. |
+| `/toggle [feature]` | Enable/disable features (`roast`, `savage_reactions`, `auto_clown`). |
 
 ---
 
 ## ⚠️ Disclaimer
-This bot is designed to be **rude/funny**. Ensure your server members are okay with a bit of "savage" humor. Features like "Activity Shaming" and "Rude Welcomes" can be disabled in the Dashboard.
+This bot is designed to be **offensive**.
+*   It **will** insult users.
+*   It **will** judge their activities.
+*   It **will** be unhelpful at high rudeness levels.
+
+**Developer Note**: All processing (Voice/Image/Text) happens **locally**. No user data is sent to external clouds (OpenAI/Google/Anthropic) unless you specifically configure the bot to use a cloud API as the backend.
